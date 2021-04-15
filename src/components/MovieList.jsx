@@ -11,17 +11,16 @@ const MovieList = () => {
   const protocol = 'http://'
   const apiurl = '127.0.0.1:5000/movie/list'
 
-  const [movieList, setMovieData] = useState({})
+  const [movieList, setMovieList] = useState({})
 
   useEffect(() => {
     fetch(`${protocol}${apiurl}${searchParams}`)
       .then(res => res.json())
       .then(data => {
-        setMovieData(data);
+        setMovieList(data);
       })
       .catch(err => console.error(err));
-  });
-
+  }, [search]);
 
   if (Object.keys(movieList).length === 0) {
     return <div>
