@@ -50,38 +50,55 @@ sampleMovieList = [
 @cross_origin()
 def movie_list():
     params = request.args #.get('username')
-    print(params)
-    for movie in sampleMovieList:
-      jsonify(movie)
-    
-    print(sampleMovieList)
-    return jsonify(sampleMovieList)
+    search = params.get('search')
+    mappedList = []
+
+    if not search:
+      #print("movie_list: running Sample")
+      mappedList = sampleMovieList
+    else:
+      #usage: http://www.omdbapi.com/?s=gunner&apikey=da0a1687
+      omdbrequest = '{}{}?s={}&apikey={}'.format(protocol, omdbapi_host, search, apikey)
+      response = requests.get(omdbrequest)
+      #
+      if response.status_code == 200:
+        #print("movie_list: running mapper")
+        movieList = response.json()['Search']
+        for movie in movieList:
+          mappedList.append(movie_mapper(movie))
+      else:
+        #print("movie_list: running Sample")
+        mappedList = sampleMovieList
+        #for movie in movieList:
+        #  jsonify(movie)
+
+    return jsonify(mappedList)
 
 @app.route('/movie/detail/<string:movie_id>', methods=['GET'])
 @cross_origin()
 def movie_detail(movie_id):
-    #sample usage: http://www.omdbapi.com/?i=tt3896198&apikey=da0a1687
+    #usage: http://www.omdbapi.com/?i=tt3896198&apikey=da0a1687
     request = '{}{}?i={}&apikey={}'.format(protocol,omdbapi_host,movie_id,apikey)
     response = requests.get(request)
 
     if response.status_code == 200:
-      print("running mapper")
+      #print("running mapper")
       movieDetail = movie_mapper(response.json())
     else:
-      print("running Sample")
+      #print("running Sample")
       movieDetail = sampleMovieDetail
 
     return jsonify(movieDetail)
 
 def movie_mapper(responseData):
   return {
-    "id": responseData['imdbID'],
-    "movieTitle": responseData['Title'],
-    "movieYear": responseData['Year'],
-    "movieLength": responseData['Runtime'],
-    "moviePlot": responseData['Plot'],
-    "moviePoster": responseData['Poster'],
-    "contentType": responseData['Type']
+      "id": responseData.get('imdbID', ''),
+      "movieTitle": responseData.get('Title', ''),
+      "movieYear": responseData.get('Year', ''),
+      "movieLength": responseData.get('Runtime', ''),
+      "moviePlot": responseData.get('Plot', ''),
+      "moviePoster": responseData.get('Poster', ''),
+      "contentType": responseData.get('Type', '')
   }
 
 app.run()
