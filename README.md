@@ -11,6 +11,11 @@
 2. Install the necessary python packages: `pip3 install -r requirements.txt`
 3. Start up the API: `python3 api.py`
 
+## Usage
+* `/`: will show a canned two movies
+* `/movie/${id}`: This displays details of the movie that matches `id`. If `id` is not found then the canned sample is showen.
+* `/?search=${search text}`: This displays the  list returned from omdbapi for the given search text. e.g.`/?search=${the long}` 
+
 ## Routes
 There are 2 main routes to the JS app:
 1. Root `/`: This should display a list of movies available
@@ -63,3 +68,4 @@ The snippet below is the schema the React App expects the data to be in.
   "required": [ "contentType", "id", "movieTitle", "movieYear", "movieLength" ]
 }
 ```
+
